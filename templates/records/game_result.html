@@ -47,7 +47,7 @@
         </tbody>
     </table>
     {% if user.is_authenticated %}
-        <a href="{% url 'result_add' %}"><button type="button">결과 추가</button></a>
+        <a href="{% url 'game_result_add' rally.rally_id match.match_id %}"><button type="button">결과 추가</button></a>
     {% endif %}
 </body>
 </html>

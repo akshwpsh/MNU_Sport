@@ -29,10 +29,20 @@ class SportForm(forms.ModelForm):
         fields = ['name']
 
 class GameResultForm(forms.ModelForm):
-
+    team_id = forms.ModelChoiceField(
+        queryset=Team.objects.all(),
+        label="Team",
+        to_field_name="team_name",
+        empty_label="Select a team",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     class Meta:
         model = GameResult
-        fields = ['score', 'rank', 'result','team_id']
+        fields = ['score', 'rank', 'result', 'team_id']
+
+    def __init__(self, *args, **kwargs):
+        super(GameResultForm, self).__init__(*args, **kwargs)
+        self.fields['team_id'].label_from_instance = lambda obj: obj.team_name
 
 class StudentForm(forms.ModelForm):
     major_id = forms.ModelChoiceField(
@@ -86,3 +96,9 @@ class TeamForm(forms.ModelForm):
         self.fields['rally_id'].label_from_instance = lambda obj: obj.name
         self.fields['sport_id'].label_from_instance = lambda obj: obj.name
         self.fields['students'].label_from_instance = lambda obj: obj.name
+
+class TeamStudentMappingForm(forms.ModelForm):
+    class Meta:
+        model = TeamStudentMapping
+        fields = ['team_id', 'student_id']
+

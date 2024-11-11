@@ -4,6 +4,7 @@ from .forms import *
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect,  get_object_or_404, render
 from django.urls import reverse
+from django.http import JsonResponse
 
 class RallyListView(View):
     def get(self, request):
@@ -66,14 +67,17 @@ class SportCreateView(View):
 class GameResultView(View):
     def get(self, request, rally_id, match_id):
         match = get_object_or_404(Match, pk=match_id)
+        rally = get_object_or_404(Rally, pk=rally_id)
         gameResults = GameResult.objects.filter(match_id=match)
-        return render(request, 'records/game_result.html', {'gameResults': gameResults})
+        return render(request, 'records/game_result.html', {'gameResults': gameResults,  'match': match, 'rally': rally})
 
 class GameResultCreateView(View):
     def get(self, request, rally_id, match_id):
-        form = GameResultForm()
+        GameResult_form = GameResultForm()
+        Team_form = TeamForm()
         match = get_object_or_404(Match, pk=match_id)
-        return render(request, 'records/game_result_form.html', {'form': form, 'match': match})
+        rally = get_object_or_404(Rally, pk=rally_id)
+        return render(request, 'records/game_result_form.html', {'gameResult_form': GameResult_form, 'team_form': Team_form, 'match': match, 'rally': rally})
 
     def post(self, request, rally_id, match_id):
         match = get_object_or_404(Match, pk=match_id)
@@ -132,10 +136,14 @@ class TeamCreateView(View):
 
     def post(self, request):
         form = TeamForm(request.POST)
+        mapping_form = TeamStudentMappingForm()
         if form.is_valid():
-            form.save()
-            return redirect('team_list')
-        return render(request, 'records/team_form.html', {'form': form})
+            team = form.save()
+            for student in form.cleaned_data['students']:
+                mapping = TeamStudentMapping(team_id=team, student_id=student)
+                mapping.save()
+            return JsonResponse({'success': True, 'team_id': team.team_id, 'team_name': team.team_name})
+        return JsonResponse({'success': False})
 
 class AdminPageView(LoginRequiredMixin, View):
 

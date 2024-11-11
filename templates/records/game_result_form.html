@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>게임 결과 추가</title>
+    <script>
+        function openTeamModal() {
+            document.getElementById('teamModal').style.display = 'block';
+        }
+
+        function closeTeamModal() {
+            document.getElementById('teamModal').style.display = 'none';
+        }
+
+        function addTeam(event) {
+            event.preventDefault();
+            const form = document.getElementById('teamForm');
+            const formData = new FormData(form);
+
+            fetch("{% url 'team_add' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const teamSelect = document.getElementById('id_team');
+                    const newOption = document.createElement('option');
+                    newOption.value = data.team_id;
+                    newOption.text = data.team_name;
+                    teamSelect.add(newOption);
+                    teamSelect.value = data.team_id; // Set the newly added team as selected
+                    closeTeamModal();
+                    alert('Team added successfully!');
+                } else {
+                    alert('Error adding team');
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>게임 결과 추가</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ gameResult_form.as_p }}
+        <button type="button" onclick="openTeamModal()">팀 추가</button>
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="teamModal" style="display:none;">
+        <form id="teamForm" onsubmit="addTeam(event)">
+            {% csrf_token %}
+            {{ team_form.as_p }}
+            <button type="submit">Add Team</button>
+            <button type="button" onclick="closeTeamModal()">Cancel</button>
+        </form>
+    </div>
+</body>
+</html>
