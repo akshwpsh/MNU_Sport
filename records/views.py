@@ -1,7 +1,9 @@
-from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from records.models import Rally, Match, Sport, GameResult
-from .forms import RallyForm, MatchForm, SportForm
+from records.models import *
+from .forms import *
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect,  get_object_or_404, render
+from django.urls import reverse
 
 class RallyListView(View):
     def get(self, request):
@@ -66,3 +68,78 @@ class GameResultView(View):
         match = get_object_or_404(Match, pk=match_id)
         gameResults = GameResult.objects.filter(match_id=match)
         return render(request, 'records/game_result.html', {'gameResults': gameResults})
+
+class GameResultCreateView(View):
+    def get(self, request, rally_id, match_id):
+        form = GameResultForm()
+        match = get_object_or_404(Match, pk=match_id)
+        return render(request, 'records/game_result_form.html', {'form': form, 'match': match})
+
+    def post(self, request, rally_id, match_id):
+        match = get_object_or_404(Match, pk=match_id)
+        form = GameResultForm(request.POST)
+        if form.is_valid():
+            gameResult = form.save(commit=False)
+            gameResult.match_id = match
+            gameResult.save()
+            return redirect('game_result', rally_id=rally_id, match_id=match_id)
+        return render(request, 'records/game_result_form.html', {'form': form, 'match': match})
+
+class StudentListView(View):
+    def get(self, request):
+        students = Student.objects.all()
+        return render(request, 'records/student_list.html', {'students': students})
+
+class StudentCreateView(View):
+    def get(self, request):
+        form = StudentForm()
+        return render(request, 'records/student_form.html', {'form': form})
+
+    def post(self, request):
+        form = StudentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('student_list')
+        return render(request, 'records/student_form.html', {'form': form})
+
+
+class MajorListView(View):
+    def get(self, request):
+        majors = Major.objects.all()
+        return render(request, 'records/major_list.html', {'majors': majors})
+
+class MajorCreateView(View):
+    def get(self, request):
+        form = MajorForm()
+        return render(request, 'records/major_form.html', {'form': form})
+
+    def post(self, request):
+        form = MajorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('major_list')
+        return render(request, 'records/major_form.html', {'form': form})
+
+class TeamListView(View):
+    def get(self, request):
+        teams = Team.objects.all()
+        return render(request, 'records/team_list.html', {'teams': teams})
+
+class TeamCreateView(View):
+    def get(self, request):
+        form = TeamForm()
+        return render(request, 'records/team_form.html', {'form': form})
+
+    def post(self, request):
+        form = TeamForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('team_list')
+        return render(request, 'records/team_form.html', {'form': form})
+
+class AdminPageView(LoginRequiredMixin, View):
+
+    def get(self, request):
+        return render(request, 'records/admin_page.html')
+
+

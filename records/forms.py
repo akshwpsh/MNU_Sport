@@ -1,5 +1,5 @@
 from django import forms
-from .models import Rally , Match, Sport
+from .models import *
 
 class RallyForm(forms.ModelForm):
     class Meta:
@@ -27,3 +27,62 @@ class SportForm(forms.ModelForm):
     class Meta:
         model = Sport
         fields = ['name']
+
+class GameResultForm(forms.ModelForm):
+
+    class Meta:
+        model = GameResult
+        fields = ['score', 'rank', 'result','team_id']
+
+class StudentForm(forms.ModelForm):
+    major_id = forms.ModelChoiceField(
+        queryset=Major.objects.all(),
+        label="Major",
+        to_field_name="name",
+        empty_label="Select a major",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    class Meta:
+        model = Student
+        fields = ['name', 'student_num', 'major_id']
+
+    def __init__(self, *args, **kwargs):
+        super(StudentForm, self).__init__(*args, **kwargs)
+        self.fields['major_id'].label_from_instance = lambda obj: obj.name
+
+class MajorForm(forms.ModelForm):
+    class Meta:
+        model = Major
+        fields = ['name']
+
+class TeamForm(forms.ModelForm):
+    rally_id = forms.ModelChoiceField(
+        queryset=Rally.objects.all(),
+        label="Rally",
+        to_field_name="name",
+        empty_label="Select a rally",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    sport_id = forms.ModelChoiceField(
+        queryset=Sport.objects.all(),
+        label="Sport",
+        to_field_name="name",
+        empty_label="Select a sport",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    students = forms.ModelMultipleChoiceField(
+        queryset=Student.objects.all(),
+        label="Students",
+        widget=forms.CheckboxSelectMultiple
+    )
+
+    class Meta:
+        model = Team
+        fields = ['team_name', 'rally_id', 'sport_id', 'students']
+
+    def __init__(self, *args, **kwargs):
+        super(TeamForm, self).__init__(*args, **kwargs)
+        self.fields['rally_id'].label_from_instance = lambda obj: obj.name
+        self.fields['sport_id'].label_from_instance = lambda obj: obj.name
+        self.fields['students'].label_from_instance = lambda obj: obj.name

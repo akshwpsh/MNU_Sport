@@ -18,6 +18,7 @@
    {% if user.is_authenticated %}
         <a href="{% url 'rally_add' %}"><button type="button">대회 추가</button></a>
         <a href="{% url 'logout' %}"><button type="button">로그아웃</button></a>
+        <a href="{% url 'admin_page' %}"><button type="button">관리자 페이지</button></a>
     {% else %}
         <a href="{% url 'login' %}"><button type="button">로그인</button></a>
     {% endif %}

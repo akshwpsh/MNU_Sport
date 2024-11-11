@@ -9,4 +9,10 @@ urlpatterns = [
     path('sport/', SportListView.as_view(), name='sport_list'),
     path('sport/add/', SportCreateView.as_view(), name='sport_add'),
     path('<int:rally_id>/<int:match_id>/result', GameResultView.as_view(), name='game_result'),
+
+    path('student/', StudentListView.as_view(), name='student_list'),
+    path('student/add/', StudentCreateView.as_view(), name='student_add'),
+    path('major/', MajorListView.as_view(), name='major_list'),
+    path('major/add/', MajorCreateView.as_view(), name='major_add'),
+    path('admin/', AdminPageView.as_view(), name='admin_page'),
 ]

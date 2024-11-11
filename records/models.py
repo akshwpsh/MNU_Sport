@@ -5,7 +5,6 @@ from django.db import models
 class Major(models.Model):
     major_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
-    group = models.CharField(max_length=50)
 
     class Meta:
         db_table = 'Major'
