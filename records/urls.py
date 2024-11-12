@@ -18,4 +18,5 @@ urlpatterns = [
     path('team/', TeamListView.as_view(), name='team_list'),
     path('team/add/', TeamCreateView.as_view(), name='team_add'),
     path('<int:rally_id>/<int:match_id>/result/add/', GameResultCreateView.as_view(), name='game_result_add'),
+    path('teams/<int:team_id>/players/', TeamsPlayersView.as_view(), name=' team_players'), 
 ]

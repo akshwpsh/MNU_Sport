@@ -69,6 +69,15 @@ class GameResultView(View):
         match = get_object_or_404(Match, pk=match_id)
         rally = get_object_or_404(Rally, pk=rally_id)
         gameResults = GameResult.objects.filter(match_id=match)
+        #gameResults의 각 팀 선수들 정보를 가져오기 위해 team_id를 이용해 team_student_mapping을 가져온다.
+        for gameResult in gameResults:
+            team = Team.objects.get(team_id=gameResult.team_id.team_id)
+            team_student_mapping = TeamStudentMapping.objects.filter(team_id=team)
+            students = []
+            for mapping in team_student_mapping:
+                student = Student.objects.get(student_id=mapping.student_id.student_id)
+                students.append(student)
+            gameResult.students = students
         return render(request, 'records/game_result.html', {'gameResults': gameResults,  'match': match, 'rally': rally})
 
 class GameResultCreateView(View):
@@ -150,4 +159,14 @@ class AdminPageView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'records/admin_page.html')
 
+
+class TeamsPlayersView(View):
+    def get(self, request, team_id):
+        team = get_object_or_404(Team, pk=team_id)
+        team_student_mapping = TeamStudentMapping.objects.filter(team_id=team)
+        students = []
+        for mapping in team_student_mapping:
+            student = Student.objects.get(student_id=mapping.student_id.student_id)
+            students.append(student)
+        return JsonResponse({'team_name': team.team_name, 'students': students})
 

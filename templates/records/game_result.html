@@ -16,6 +16,12 @@
         th {
             background-color: #f2f2f2;
         }
+        .win {
+            color: green;
+        }
+        .loss {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -32,16 +38,16 @@
         <tbody>
             {% for result in gameResults %}
                 <tr>
-                    <td>{{ result.team.name }}</td>
+                    <td class="{% if result.result == '승' %}win{% else %}loss{% endif %}">{{ result.team_id.team_name }}</td>
                     <td>
                         <ul>
-                            {% for player in result.team.players.all %}
-                                <li>{{ player.name }}</li>
+                            {% for player in result.students %}
+                                <li>{{ player.name }}: {{ player.score }}</li>
                             {% endfor %}
                         </ul>
                     </td>
                     <td>{{ result.score }}</td>
-                    <td>{{ result.win_loss }}</td>
+                    <td>{{ result.result }}</td>
                 </tr>
             {% endfor %}
         </tbody>

@@ -27,7 +27,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    const teamSelect = document.getElementById('id_team');
+                    const teamSelect = document.getElementById('id_team_id');
                     const newOption = document.createElement('option');
                     newOption.value = data.team_id;
                     newOption.text = data.team_name;
@@ -38,15 +38,53 @@
                 } else {
                     alert('Error adding team');
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding team');
             });
         }
+
+        function fetchPlayers(teamId) {
+            fetch(`/records/teams/${teamId}/players/`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const playersContainer = document.getElementById('playersContainer');
+                playersContainer.innerHTML = '';
+                data.students.forEach(student => {
+                    const playerDiv = document.createElement('div');
+                    playerDiv.innerHTML = `
+                        <label>${student.student_name}</label>
+                        <input type="number" name="player_scores[${student.student_id}]" value="0" placeholder="Score">
+                    `;
+                    playersContainer.appendChild(playerDiv);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error fetching players');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const teamSelect = document.getElementById('id_team_id');
+            teamSelect.addEventListener('change', (event) => {
+                fetchPlayers(event.target.value);
+            });
+        });
     </script>
 </head>
 <body>
     <h1>게임 결과 추가</h1>
-    <form method="post">
+    <form method="post" action="{% url 'game_result' rally.rally_id match.match_id %}">
         {% csrf_token %}
         {{ gameResult_form.as_p }}
+        <div id="playersContainer"></div>
         <button type="button" onclick="openTeamModal()">팀 추가</button>
         <button type="submit">Submit</button>
     </form>
