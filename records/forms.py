@@ -1,13 +1,13 @@
 from django import forms
 from .models import *
 
-class RallyForm(forms.ModelForm):
+class CompetitionForm(forms.ModelForm):
     class Meta:
-        model = Rally
+        model = Competition
         fields = ['name', 'start_date', 'end_date']
 
 class MatchForm(forms.ModelForm):
-    sport_id = forms.ModelChoiceField(
+    sport = forms.ModelChoiceField(
         queryset=Sport.objects.all(),
         label="Sport",
         to_field_name="name",
@@ -17,11 +17,11 @@ class MatchForm(forms.ModelForm):
 
     class Meta:
         model = Match
-        fields = ['match_name', 'match_date', 'location', 'sport_id']
+        fields = ['match_name', 'match_date', 'location', 'sport']
 
     def __init__(self, *args, **kwargs):
         super(MatchForm, self).__init__(*args, **kwargs)
-        self.fields['sport_id'].label_from_instance = lambda obj: obj.name
+        self.fields['sport'].label_from_instance = lambda obj: obj.name
 
 class SportForm(forms.ModelForm):
     class Meta:
@@ -69,11 +69,11 @@ class MajorForm(forms.ModelForm):
         fields = ['name']
 
 class TeamForm(forms.ModelForm):
-    rally_id = forms.ModelChoiceField(
-        queryset=Rally.objects.all(),
-        label="Rally",
+    Competition_id = forms.ModelChoiceField(
+        queryset=Competition.objects.all(),
+        label="Competition",
         to_field_name="name",
-        empty_label="Select a rally",
+        empty_label="Select a Competition",
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     sport_id = forms.ModelChoiceField(
@@ -91,16 +91,16 @@ class TeamForm(forms.ModelForm):
 
     class Meta:
         model = Team
-        fields = ['team_name', 'rally_id', 'sport_id', 'students']
+        fields = ['team_name', 'Competition_id', 'sport_id', 'students']
 
     def __init__(self, *args, **kwargs):
         super(TeamForm, self).__init__(*args, **kwargs)
-        self.fields['rally_id'].label_from_instance = lambda obj: obj.name
+        self.fields['Competition_id'].label_from_instance = lambda obj: obj.name
         self.fields['sport_id'].label_from_instance = lambda obj: obj.name
         self.fields['students'].label_from_instance = lambda obj: obj.name
 
 class TeamStudentMappingForm(forms.ModelForm):
     class Meta:
         model = TeamStudentMapping
-        fields = ['team_id', 'student_id']
+        fields = ['team', 'student']
 

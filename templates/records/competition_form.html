@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
-{%  block title %} 경기 추가 {% endblock %}
+{%  block title %} 대회 추가 {% endblock %}
 {% block content %}
-   <h1>경기 추가</h1>
+   <h1>대회 추가</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}

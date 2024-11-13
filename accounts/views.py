@@ -17,7 +17,7 @@ class LoginView(View):
 
             if user is not None:
                 login(request, user)
-                return redirect('/')  # 로그인 후 이동할 페이지
+                return redirect('/records/admin/')  # 로그인 후 이동할 페이지
             else:
                 messages.error(request, "로그인 정보가 올바르지 않습니다.")
         return render(request, 'accounts/login.html')

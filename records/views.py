@@ -6,46 +6,46 @@ from django.shortcuts import redirect,  get_object_or_404, render
 from django.urls import reverse
 from django.http import JsonResponse
 
-class RallyListView(View):
+class CompetitionListView(View):
     def get(self, request):
-        rallies = Rally.objects.all()
-        return render(request, 'records/rally_list.html', {'rallies': rallies})
+        competitions = Competition.objects.all()
+        return render(request, 'records/competition_list.html', {'competitions': competitions})
 
 
-class RallyCreateView(View):
+class CompetitionCreateView(View):
     def get(self, request):
-        form = RallyForm()
-        return render(request, 'records/rally_form.html', {'form': form})
+        form = CompetitionForm()
+        return render(request, 'records/competition_form.html', {'form': form})
 
     def post(self, request):
-        form = RallyForm(request.POST)
+        form = CompetitionForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('rally_list')
-        return render(request, 'records/rally_form.html', {'form': form})
+            return redirect('competition_list')
+        return render(request, 'records/competition_form.html', {'form': form})
 
 class MatchListView(View):
-    def get(self, request, rally_id):
-        rally = get_object_or_404(Rally, pk=rally_id)
-        matches = Match.objects.filter(rally_id=rally)
-        return render(request, 'records/match_list.html', {'matches': matches, 'rally': rally})
+    def get(self, request, competition_id):
+        competition = get_object_or_404(Competition, pk=competition_id)
+        matches = Match.objects.filter(competition=competition)
+        return render(request, 'records/match_list.html', {'matches': matches, 'competition': competition})
 
 # records/views.py
 class MatchCreateView(View):
-    def get(self, request, rally_id):
+    def get(self, request, competition_id):
         form = MatchForm()
-        rally = get_object_or_404(Rally, pk=rally_id)
-        return render(request, 'records/match_form.html', {'form': form, 'rally': rally})
+        competition = get_object_or_404(Competition, pk=competition_id)
+        return render(request, 'records/match_form.html', {'form': form, 'competition': competition})
 
-    def post(self, request, rally_id):
-        rally = get_object_or_404(Rally, pk=rally_id)
+    def post(self, request, competition_id):
+        competition = get_object_or_404(Competition, pk=competition_id)
         form = MatchForm(request.POST)
         if form.is_valid():
             match = form.save(commit=False)
-            match.rally_id = rally
+            match.competition = competition
             match.save()
-            return redirect('match_list', rally_id=rally_id)
-        return render(request, 'records/match_form.html', {'form': form, 'rally': rally})
+            return redirect('match_list', competition_id=competition_id)
+        return render(request, 'records/match_form.html', {'form': form, 'competition': competition})
 
 class SportListView(View):
     def get(self, request):
@@ -65,37 +65,36 @@ class SportCreateView(View):
         return render(request, 'records/sport_form.html', {'form': form})
 
 class GameResultView(View):
-    def get(self, request, rally_id, match_id):
+    def get(self, request, competition_id, match_id):
+        competition = get_object_or_404(Competition, pk=competition_id)
         match = get_object_or_404(Match, pk=match_id)
-        rally = get_object_or_404(Rally, pk=rally_id)
-        gameResults = GameResult.objects.filter(match_id=match)
+        gameResults = GameResult.objects.filter(match=match)
         #gameResults의 각 팀 선수들 정보를 가져오기 위해 team_id를 이용해 team_student_mapping을 가져온다.
         for gameResult in gameResults:
-            team = Team.objects.get(team_id=gameResult.team_id.team_id)
-            team_student_mapping = TeamStudentMapping.objects.filter(team_id=team)
+            team_student_mapping = TeamStudentMapping.objects.filter(team = gameResult.team)
             students = []
             for mapping in team_student_mapping:
-                student = Student.objects.get(student_id=mapping.student_id.student_id)
+                student = Student.objects.get(student =mapping.student)
                 students.append(student)
             gameResult.students = students
-        return render(request, 'records/game_result.html', {'gameResults': gameResults,  'match': match, 'rally': rally})
+        return render(request, 'records/game_result.html', {'gameResults': gameResults, 'match': match, 'competition': competition})
 
 class GameResultCreateView(View):
-    def get(self, request, rally_id, match_id):
+    def get(self, request, competition_id, match_id):
         GameResult_form = GameResultForm()
         Team_form = TeamForm()
         match = get_object_or_404(Match, pk=match_id)
-        rally = get_object_or_404(Rally, pk=rally_id)
-        return render(request, 'records/game_result_form.html', {'gameResult_form': GameResult_form, 'team_form': Team_form, 'match': match, 'rally': rally})
+        competition = get_object_or_404(Competition, pk=competition_id)
+        return render(request, 'records/game_result_form.html', {'gameResult_form': GameResult_form, 'team_form': Team_form, 'match': match, 'competition': competition})
 
-    def post(self, request, rally_id, match_id):
+    def post(self, request, competition_id, match_id):
         match = get_object_or_404(Match, pk=match_id)
         form = GameResultForm(request.POST)
         if form.is_valid():
             gameResult = form.save(commit=False)
             gameResult.match_id = match
             gameResult.save()
-            return redirect('game_result', rally_id=rally_id, match_id=match_id)
+            return redirect('game_result', Competition_id=competition_id, match_id=match_id)
         return render(request, 'records/game_result_form.html', {'form': form, 'match': match})
 
 class StudentListView(View):

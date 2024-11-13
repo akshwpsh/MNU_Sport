@@ -19,13 +19,13 @@ class Student(models.Model):
         db_table = 'student'
 
 class Competition(models.Model):
-    Competition_id = models.AutoField(primary_key=True)
+    competition_id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
 
     class Meta:
-        db_table = 'Rally'
+        db_table = 'Competition'
 
 
 class Sport(models.Model):
@@ -44,8 +44,8 @@ class Team(models.Model):
 
 class TeamStudentMapping(models.Model):
     team_student_mapping_id = models.AutoField(primary_key=True)
-    team_id = models.ForeignKey(Team, on_delete=models.CASCADE)
-    student_id = models.ForeignKey(Student, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'Team-Student_Mapping'

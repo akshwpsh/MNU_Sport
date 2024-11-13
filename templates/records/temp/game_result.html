@@ -1,7 +1,7 @@
-{% extends 'base.html' %}
-{%  block title %} 경기 목록 {% endblock %}
-{% block style %} 
-   <meta charset="UTF-8">
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
     <title>경기 결과</title>
     <style>
         table {
@@ -23,9 +23,9 @@
             color: red;
         }
     </style>
-{% endblock %}
-{% block content %}
-  <h1>경기 결과</h1>
+</head>
+<body>
+    <h1>경기 결과</h1>
     <table>
         <thead>
             <tr>
@@ -41,8 +41,8 @@
                     <td class="{% if result.result == '승' %}win{% else %}loss{% endif %}">{{ result.team_id.team_name }}</td>
                     <td>
                         <ul>
-                            {% for student in result.students %}
-                                <li>{{ student.name }}: {{ student.score }}</li>
+                            {% for player in result.students %}
+                                <li>{{ player.name }}: {{ player.score }}</li>
                             {% endfor %}
                         </ul>
                     </td>
@@ -53,6 +53,7 @@
         </tbody>
     </table>
     {% if user.is_authenticated %}
-        <a href="{% url 'game_result_add' competition.competition_id match.match_id %}"><button type="button">결과 추가</button></a>
+        <a href="{% url 'game_result_add' rally.rally_id match.match_id %}"><button type="button">결과 추가</button></a>
     {% endif %}
-{% endblock %}
+</body>
+</html>

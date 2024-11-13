@@ -1,7 +1,9 @@
-{% extends 'base.html' %}
-{%  block title %} 학과 목록 {% endblock %}
-{% block style %} 
-   <style>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>학과 목록</title>
+    <style>
         table {
             width: 100%;
             border-collapse: collapse;
@@ -14,8 +16,8 @@
             text-align: left;
         }
     </style>
-{% endblock %}
-{% block content %}
+</head>
+<body>
     <h1>학과 목록</h1>
     <table>
         <thead>
@@ -36,4 +38,5 @@
     {% if user.is_authenticated %}
         <a href="{% url 'major_add' %}"><button type="button">학과 추가</button></a>
     {% endif %}
-{% endblock %}
+</body>
+</html>

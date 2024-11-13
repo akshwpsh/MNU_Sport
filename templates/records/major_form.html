@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>학과 추가</title>
-</head>
-<body>
-    <h1>학과 추가</h1>
+{% extends 'base.html' %}
+{%  block title %} 학과 추가 {% endblock %}
+{% block content %}
+     <h1>학과 추가</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">추가</button>
     </form>
-</body>
-</html>
+{% endblock %}

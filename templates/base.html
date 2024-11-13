@@ -1,0 +1,26 @@
+{% load static %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}My Site{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block style %} {% endblock %}
+    {% block script %} {% endblock %}
+</head>
+<body>
+    <header>
+        <a href="{% url 'main_page' %}">
+            <h1>MNU Sport</h1>
+        </a>
+        <nav>
+            <ul>
+                <li><a href="{% url 'admin_page' %}">Admin Page</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

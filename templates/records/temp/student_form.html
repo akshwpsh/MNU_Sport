@@ -1,10 +1,15 @@
-{% extends 'base.html' %}
-{%  block title %} 학생 추가 {% endblock %}
-{% block content %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>학생 추가</title>
+</head>
+<body>
     <h1>학생 추가</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">추가</button>
     </form>
-{% endblock %}
+</body>
+</html>

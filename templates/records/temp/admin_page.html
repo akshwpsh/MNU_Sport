@@ -1,6 +1,8 @@
-{% extends 'base.html' %}
-{%  block title %} 관리자 페이지 {% endblock %}
-{% block style %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 페이지</title>
     <style>
         .button-container {
             display: flex;
@@ -23,15 +25,13 @@
             background-color: #45a049;
         }
     </style>
-{% endblock %}
-
-{% block content %}
+</head>
+<body>
     <h1>관리자 페이지</h1>
     <div class="button-container">
         <a href="{% url 'student_list' %}">학생 관리</a>
         <a href="{% url 'major_list' %}">학과 관리</a>
-        <a href="{% url 'sport_list' %}">스포츠 관리</a>
         <a href="{% url 'team_list' %}">팀 관리</a>
-        <a href="{% url 'logout' %}">로그아웃</a>
     </div>
-{% endblock %}
+</body>
+</html>
