@@ -69,14 +69,31 @@ class GameResultView(View):
         competition = get_object_or_404(Competition, pk=competition_id)
         match = get_object_or_404(Match, pk=match_id)
         gameResults = GameResult.objects.filter(match=match)
-        #gameResults의 각 팀 선수들 정보를 가져오기 위해 team_id를 이용해 team_student_mapping을 가져온다.
+
+        # Fetch team and player information along with their scores
         for gameResult in gameResults:
-            team_student_mapping = TeamStudentMapping.objects.filter(team = gameResult.team)
-            students = []
-            for mapping in team_student_mapping:
-                student = Student.objects.get(student =mapping.student)
-                students.append(student)
-            gameResult.students = students
+            team_game_result_mapping = TeamGameResultMapping.objects.filter(gameResult=gameResult)
+            teams = []
+            for result_mapping in team_game_result_mapping:
+                team = result_mapping.team
+                students = []
+                team_student_mappings = TeamStudentMapping.objects.filter(team=team)
+                for mapping in team_student_mappings:
+                    student = mapping.student
+                    # Fetch the player's score for this game result
+                    player_score = PlayerScore.objects.filter(student=student, gameResult=gameResult).first()
+                    students.append({
+                        'name': student.name,
+                        'student_id': student.student_id,
+                        'score': player_score.score if player_score else 0
+                    })
+                teams.append({
+                    'team_id': team.team_id,
+                    'team_name': team.team_name,
+                    'students': students
+                })
+            gameResult.teams = teams
+
         return render(request, 'records/game_result.html', {'gameResults': gameResults, 'match': match, 'competition': competition})
 
 class GameResultCreateView(View):
@@ -88,13 +105,23 @@ class GameResultCreateView(View):
         return render(request, 'records/game_result_form.html', {'gameResult_form': GameResult_form, 'team_form': Team_form, 'match': match, 'competition': competition})
 
     def post(self, request, competition_id, match_id):
+        print("match_id: ", match_id)
         match = get_object_or_404(Match, pk=match_id)
         form = GameResultForm(request.POST)
         if form.is_valid():
             gameResult = form.save(commit=False)
-            gameResult.match_id = match
+            gameResult.match = match
             gameResult.save()
-            return redirect('game_result', Competition_id=competition_id, match_id=match_id)
+            TeamGameResultMapping.objects.create(team=Team.objects.get(team_id=form.cleaned_data['team_id'].team_id), gameResult=gameResult)
+
+            player_scores = request.POST.dict()
+            for key, score in player_scores.items():
+                if key.startswith('player_scores[') and key.endswith(']'):
+                    student_id = key[len('player_scores['):-1]
+                    student = Student.objects.get(student_id=student_id)
+                    PlayerScore.objects.create(student=student, gameResult=gameResult, score=score)
+            return redirect('game_result', competition_id=competition_id, match_id=match_id)
+
         return render(request, 'records/game_result_form.html', {'form': form, 'match': match})
 
 class StudentListView(View):
@@ -144,12 +171,10 @@ class TeamCreateView(View):
 
     def post(self, request):
         form = TeamForm(request.POST)
-        mapping_form = TeamStudentMappingForm()
         if form.is_valid():
             team = form.save()
             for student in form.cleaned_data['students']:
-                mapping = TeamStudentMapping(team_id=team, student_id=student)
-                mapping.save()
+                TeamStudentMapping.objects.create(team=team, student=student)
             return JsonResponse({'success': True, 'team_id': team.team_id, 'team_name': team.team_name})
         return JsonResponse({'success': False})
 
@@ -162,10 +187,6 @@ class AdminPageView(LoginRequiredMixin, View):
 class TeamsPlayersView(View):
     def get(self, request, team_id):
         team = get_object_or_404(Team, pk=team_id)
-        team_student_mapping = TeamStudentMapping.objects.filter(team_id=team)
-        students = []
-        for mapping in team_student_mapping:
-            student = Student.objects.get(student_id=mapping.student_id.student_id)
-            students.append(student)
-        return JsonResponse({'team_name': team.team_name, 'students': students})
+        team_student_mapping = TeamStudentMapping.objects.filter(team=team).values('student__student_id', 'student__name')
+        return JsonResponse({'team_student_mapping': list(team_student_mapping)})
 

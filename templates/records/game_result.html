@@ -37,18 +37,20 @@
         </thead>
         <tbody>
             {% for result in gameResults %}
-                <tr>
-                    <td class="{% if result.result == '승' %}win{% else %}loss{% endif %}">{{ result.team_id.team_name }}</td>
-                    <td>
-                        <ul>
-                            {% for student in result.students %}
-                                <li>{{ student.name }}: {{ student.score }}</li>
-                            {% endfor %}
-                        </ul>
-                    </td>
-                    <td>{{ result.score }}</td>
-                    <td>{{ result.result }}</td>
-                </tr>
+                {% for team in result.teams %}
+                    <tr>
+                        <td class="{% if result.result == '승' %}win{% else %}loss{% endif %}">{{ team.team_name }}</td>
+                        <td>
+                            <ul>
+                                {% for student in team.students %}
+                                    <li>{{ student.name }}: {{ student.score }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>{{ result.score }}</td>
+                        <td>{{ result.result }}</td>
+                    </tr>
+                {% endfor %}
             {% endfor %}
         </tbody>
     </table>

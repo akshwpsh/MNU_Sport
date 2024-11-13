@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{%  block title %} 결과 추가 {% endblock %}
+{% block script %}
+<script>
+        function toggleTeamModal() {
+            const teamModal = document.getElementById('teamModal');
+            if (teamModal.style.display === 'block') {
+                teamModal.style.display = 'none';
+            } else {
+                teamModal.style.display = 'block';
+            }
+        }
+
+        function addTeam(event) {
+            event.preventDefault();
+            const form = document.getElementById('teamForm');
+            const formData = new FormData(form);
+
+            fetch("{% url 'team_add' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const teamSelect = document.getElementById('id_team_id');
+                    const newOption = document.createElement('option');
+                    newOption.value = data.team_id;
+                    newOption.text = data.team_name;
+                    teamSelect.add(newOption);
+                    teamSelect.value = data.team_id; // Set the newly added team as selected
+                    toggleTeamModal();
+                    alert('Team added successfully!');
+                } else {
+                    alert('Error adding team');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding team');
+            });
+        }
+
+        function fetchPlayers(teamId) {
+            fetch(`/records/teams/${teamId}/students/`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const playersContainer = document.getElementById('playersContainer');
+                playersContainer.innerHTML = '';
+                data.team_student_mapping.forEach(mapping => {
+                    const playerDiv = document.createElement('div');
+                    playerDiv.innerHTML = `
+                        <label>${mapping.student__name}</label>
+                        <input type="number" name="player_scores[${mapping.student__student_id}]" value="0" placeholder="Score">
+                    `;
+                    playersContainer.appendChild(playerDiv);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error fetching players');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const teamSelect = document.getElementById('id_team_id');
+            teamSelect.addEventListener('change', (event) => {
+                fetchPlayers(event.target.value);
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+     <h1>게임 결과 추가</h1>
+    <form method="post" action="{% url 'game_result_add' competition.competition_id match.match_id %}">
+        {% csrf_token %}
+        {{ gameResult_form.as_p }}
+        <div id="playersContainer"></div>
+        <button type="submit">Submit</button>
+        <button type="button" onclick="toggleTeamModal()">팀 추가</button>
+    </form>
+
+    <div id="teamModal" style="display:none;">
+        <form id="teamForm" onsubmit="addTeam(event)">
+            {% csrf_token %}
+            {{ team_form.as_p }}
+            <button type="submit">Add Team</button>
+        </form>
+    </div>
+{% endblock %}

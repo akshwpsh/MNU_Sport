@@ -19,5 +19,5 @@ urlpatterns = [
     path('major/add/', MajorCreateView.as_view(), name='major_add'),
     path('team/', TeamListView.as_view(), name='team_list'),
     path('team/add/', TeamCreateView.as_view(), name='team_add'),
-    path('teams/<int:team_id>/players/', TeamsPlayersView.as_view(), name=' team_players'),
+    path('teams/<int:team_id>/students/', TeamsPlayersView.as_view(), name=' team_players'),
 ]

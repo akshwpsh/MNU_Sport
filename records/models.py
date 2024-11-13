@@ -82,10 +82,10 @@ class PlayerScore(models.Model):
     class Meta:
         db_table = 'PlayerScore'
 
-class TeamMatchMapping(models.Model):
+class TeamGameResultMapping(models.Model):
     team_match_mapping_id = models.AutoField(primary_key=True)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
-    match = models.ForeignKey(Match, on_delete=models.CASCADE)
+    gameResult = models.ForeignKey(GameResult, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'Team-Match_Mapping'
+        db_table = 'Team-GameResult_Mapping'
