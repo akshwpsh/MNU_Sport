@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %} 관리자 관리 {% endblock %}
+
+{% block content %}
+    <h1 class="text-3xl font-bold text-center my-6">관리자 관리</h1>
+    <div class="flex flex-col items-center mt-12 space-y-4">
+        {% for user in users %}
+            <div class="w-64 text-center mx-auto">
+                <p>{{ user.username }}</p>
+                <a href="{% url 'user_delete' admin.pk %}" class="w-full p-2 text-center bg-emerald-500 text-white rounded hover:bg-emerald-700">삭제</a>
+            </div>
+        {% endfor %}
+        <a href="{% url 'register' %}" class="w-64 p-2 text-center bg-emerald-500 text-white rounded hover:bg-emerald-700">관리자 추가</a>
+    </div>
+{% endblock %}

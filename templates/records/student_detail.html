@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %} 학생 상세 정보 {% endblock %}
+{% block style %}{% endblock %}
+
+{% block content %}
+    <h1 class="text-3xl font-bold text-center my-6">학생 상세 정보</h1>
+    <div class="mb-6 flex justify-center items-center space-x-4">
+        <p class="text-lg"><span class="font-bold">이름:</span> {{ student.name }}</p>
+        <p class="text-lg"><span class="font-bold">학번:</span> {{ student.student_num }}</p>
+        <p class="text-lg"><span class="font-bold">학과:</span> {{ student.major.name }}</p>
+    </div>
+
+    <h2 class="text-2xl font-bold mb-4 text-center">참여한 경기 목록</h2>
+    <div class="flex justify-center">
+        <table class="w-full max-w-3xl border-collapse">
+            <thead>
+                <tr>
+                    <th class="border border-black px-4 py-2 bg-gray-200">경기 이름</th>
+                    <th class="border border-black px-4 py-2 bg-gray-200">경기 날짜</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for game in games %}
+                    <tr>
+                        <td class="border border-black px-4 py-2"><a href="{% url 'game_result' game.gameResult.match.competition.competition_id game.gameResult.match.match_id %}" class="text-blue-500 hover:underline">{{ game.gameResult.match.match_name }}</a></td>
+                        <td class="border border-black px-4 py-2">{{ game.gameResult.match.match_date }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

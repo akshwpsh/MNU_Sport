@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{%  block title %} 경기 목록 {% endblock %}
-{% block style %} 
+{% block title %} 경기 목록 {% endblock %}
+{% block style %}
    <style>
         table {
             width: 100%;
@@ -15,20 +15,30 @@
         }
     </style>
 {% endblock %}
-{% block content %}
-   <h1>경기 목록</h1>
-    <ul>
-        {% for match in matches %}
 
-            <li>
-                 <a href="{% url 'game_result' competition.competition_id match.match_id %}">
+{% block content %}
+   <h1 class="text-3xl font-bold text-center my-6">경기 목록</h1>
+    <form method="get" action="{% url 'match_list' competition.competition_id %}" class="flex justify-center mb-6 max-w-2xl mx-auto">
+        <input type="text" name="q" placeholder="경기 검색" class="p-2 border border-gray-300 rounded mr-2 w-11/12">
+        <button type="submit" class="p-2 bg-emerald-500 text-white rounded hover:bg-emerald-700">검색</button>
+    </form>
+    <ul class="max-w-2xl mx-auto">
+        {% for match in matches %}
+            <li class="bg-white border border-gray-300 rounded p-4 mb-4 shadow">
+                 <a href="{% url 'game_result' competition.competition_id match.match_id %}" class="font-bold hover:underline text-blue-500">
                     [{{match.sport.name}}] {{ match.match_name }} ({{ match.match_date }} - {{ match.location }})
                 </a>
             </li>
         {% endfor %}
     </ul>
-    {% if user.is_authenticated %}
-      <a href="{% url 'match_add' competition.competition_id %}"><button type="button">경기 추가</button></a>
-    {% endif %}
-    <a href="{% url 'competition_list' %}"><button type="button">대회 목록으로 돌아가기</button></a>
+    <div class="flex justify-center mt-6">
+        <a href="{% url 'competition_list' %}">
+            <button type="button" class="p-2 bg-emerald-500 text-white rounded hover:bg-emerald-700">대회 목록</button>
+        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'match_add' competition.competition_id %}" class="ml-4">
+                <button type="button" class="p-2 bg-emerald-500 text-white rounded hover:bg-emerald-700">경기 추가</button>
+            </a>
+        {% endif %}
+    </div>
 {% endblock %}

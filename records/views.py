@@ -5,11 +5,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect,  get_object_or_404, render
 from django.urls import reverse
 from django.http import JsonResponse
+from django.db.models import Q
 
 class CompetitionListView(View):
     def get(self, request):
-        competitions = Competition.objects.all()
+        query = request.GET.get('q')
+        if query:
+            competitions = Competition.objects.filter(name__icontains=query)
+        else:
+            competitions = Competition.objects.all()
         return render(request, 'records/competition_list.html', {'competitions': competitions})
+
 
 
 class CompetitionCreateView(View):
@@ -26,8 +32,15 @@ class CompetitionCreateView(View):
 
 class MatchListView(View):
     def get(self, request, competition_id):
+        queue = request.GET.get('q')
         competition = get_object_or_404(Competition, pk=competition_id)
-        matches = Match.objects.filter(competition=competition)
+        if queue:
+            matches = Match.objects.filter(
+                Q(match_name__icontains=queue) | Q(sport__name__icontains=queue),
+                competition=competition_id
+            )
+        else:
+            matches = Match.objects.filter(competition=competition)
         return render(request, 'records/match_list.html', {'matches': matches, 'competition': competition})
 
 # records/views.py
@@ -63,6 +76,12 @@ class SportCreateView(View):
             form.save()
             return redirect('sport_list')
         return render(request, 'records/sport_form.html', {'form': form})
+
+class SportDeleteView(View):
+    def post(self, request, sport_id):
+        sport = get_object_or_404(Sport, pk=sport_id)
+        sport.delete()
+        return redirect('sport_list')
 
 class GameResultView(View):
     def get(self, request, competition_id, match_id):
@@ -126,7 +145,13 @@ class GameResultCreateView(View):
 
 class StudentListView(View):
     def get(self, request):
-        students = Student.objects.all()
+        query = request.GET.get('q')
+        if query:
+            students = Student.objects.filter(
+                Q(name__icontains=query) | Q(student_num__icontains=query)
+            )
+        else :
+            students = Student.objects.all()
         return render(request, 'records/student_list.html', {'students': students})
 
 class StudentCreateView(View):
@@ -141,6 +166,18 @@ class StudentCreateView(View):
             return redirect('student_list')
         return render(request, 'records/student_form.html', {'form': form})
 
+class StudentDeleteView(View):
+    def post(self, request, student_id):
+        student = get_object_or_404(Student, pk=student_id)
+        student.delete()
+        return redirect('student_list')
+
+class StudentDetailView(View):
+    def get(self, request, student_id):
+        student = get_object_or_404(Student, pk=student_id)
+        games = PlayerScore.objects.filter(student=student)
+
+        return render(request, 'records/student_detail.html', {'student': student, 'games': games, })
 
 class MajorListView(View):
     def get(self, request):
@@ -189,4 +226,3 @@ class TeamsPlayersView(View):
         team = get_object_or_404(Team, pk=team_id)
         team_student_mapping = TeamStudentMapping.objects.filter(team=team).values('student__student_id', 'student__name')
         return JsonResponse({'team_student_mapping': list(team_student_mapping)})
-

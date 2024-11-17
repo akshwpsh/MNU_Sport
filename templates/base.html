@@ -7,16 +7,18 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     {% block style %} {% endblock %}
     {% block script %} {% endblock %}
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <header>
-        <nav>
-            <ul class="left">
-                <li><a href="{% url 'competition_list' %}">MNU Sport</a></li>
-            </ul>
-            <ul class="right">
-                <li><a href="{% url 'admin_page' %}">Admin Page</a></li>
-            </ul>
-        </nav>
+    <nav>
+        <ul class="left">
+            <li><a href="{% url 'competition_list' %}">MNU Sport</a></li>
+            <li><a href="{% url 'student_list' %}">학생 목록</a></li>
+        </ul>
+        <ul class="right">
+            <li><a href="{% url 'admin_page' %}">Admin Page</a></li>
+        </ul>
+    </nav>
 </header>
 <body>
     <main>

@@ -1,60 +1,46 @@
 {% extends 'base.html' %}
-{%  block title %} 경기 목록 {% endblock %}
-{% block style %} 
-   <meta charset="UTF-8">
-    <title>경기 결과</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        .win {
-            color: green;
-        }
-        .loss {
-            color: red;
-        }
-    </style>
-{% endblock %}
+{% block title %} 경기 목록 {% endblock %}
+{% block style %}{% endblock %}
 {% block content %}
-  <h1>경기 결과</h1>
-    <table>
+  <h1 class="text-3xl font-bold text-center my-6">경기 결과</h1>
+  <div class="flex justify-center">
+    <table class="w-full max-w-3xl border-collapse">
         <thead>
             <tr>
-                <th>팀</th>
-                <th>선수</th>
-                <th>점수</th>
-                <th>승패</th>
+                <th class="border border-black px-4 py-2 bg-gray-200">팀</th>
+                <th class="border border-black px-4 py-2 bg-gray-200">선수</th>
+                <th class="border border-black px-4 py-2 bg-gray-200">점수</th>
+                <th class="border border-black px-4 py-2 bg-gray-200">승패</th>
             </tr>
         </thead>
         <tbody>
             {% for result in gameResults %}
                 {% for team in result.teams %}
                     <tr>
-                        <td class="{% if result.result == '승' %}win{% else %}loss{% endif %}">{{ team.team_name }}</td>
-                        <td>
+                        <td class="border border-black px-4 py-2">{{ team.team_name }}</td>
+                        <td class="border border-black px-4 py-2">
                             <ul>
                                 {% for student in team.students %}
                                     <li>{{ student.name }}: {{ student.score }}</li>
                                 {% endfor %}
                             </ul>
                         </td>
-                        <td>{{ result.score }}</td>
-                        <td>{{ result.result }}</td>
+                        <td class="border border-black px-4 py-2">{{ result.score }}</td>
+                        <td class="border border-black px-4 py-2">{{ result.result }}</td>
                     </tr>
                 {% endfor %}
             {% endfor %}
         </tbody>
     </table>
+  </div>
+  <div class="flex justify-center mt-6">
+    <a href="{% url 'match_list' competition.competition_id %}">
+        <button type="button" class="p-2 bg-emerald-500 text-white rounded hover:bg-emerald-700">경기 목록</button>
+    </a>
     {% if user.is_authenticated %}
-        <a href="{% url 'game_result_add' competition.competition_id match.match_id %}"><button type="button">결과 추가</button></a>
+        <a href="{% url 'game_result_add' competition.competition_id match.match_id %}" class="ml-4">
+            <button type="button" class="p-2 bg-emerald-500 text-white rounded hover:bg-emerald-700">결과 추가</button>
+        </a>
     {% endif %}
+  </div>
 {% endblock %}
