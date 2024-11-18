@@ -1,20 +1,26 @@
 {% extends 'base.html' %}
-{%  block title %} 로그인 {% endblock %}
+{% block title %} 로그인 {% endblock %}
 {% block content %}
-    <h1>로그인</h1>
-    <form method="post" action="{% url 'login' %}">
+    <h1 class="text-3xl font-bold text-center my-6">로그인</h1>
+    <form method="post" action="{% url 'login' %}" class="max-w-md mx-auto bg-white p-8 rounded shadow-md">
         {% csrf_token %}
-        <label for="username">사용자 이름:</label>
-        <input type="text" id="username" name="username" required><br>
-        <label for="password">비밀번호:</label>
-        <input type="password" id="password" name="password" required><br>
-        <button type="submit">로그인</button>
+        <div class="mb-4">
+            <label for="username" class="block text-gray-700 text-sm font-bold mb-2">사용자 이름:</label>
+            <input type="text" id="username" name="username" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div class="mb-6">
+            <label for="password" class="block text-gray-700 text-sm font-bold mb-2">비밀번호:</label>
+            <input type="password" id="password" name="password" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+        <div class="flex items-center justify-between">
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">로그인</button>
+        </div>
     </form>
     {% if messages %}
-        <ul>
+        <ul class="mt-4">
             {% for message in messages %}
-                <li>{{ message }}</li>
+                <li class="text-red-500">{{ message }}</li>
             {% endfor %}
         </ul>
     {% endif %}
-{% endblock %}
+{% endblock %}6w
