@@ -1,106 +1,108 @@
 {% extends 'base.html' %}
+
 {% block title %} 결과 추가 {% endblock %}
+
 {% block script %}
 <script>
-        function toggleTeamModal() {
-            const teamModal = document.getElementById('teamModal');
-            if (teamModal.style.display === 'block') {
-                teamModal.style.display = 'none';
-            } else {
-                teamModal.style.display = 'block';
+    function toggleTeamModal() {
+        const teamModal = document.getElementById('teamModal');
+        if (teamModal.style.display === 'block') {
+            teamModal.style.display = 'none';
+        } else {
+            teamModal.style.display = 'block';
+        }
+    }
+
+    function addTeam(event) {
+        event.preventDefault();
+        const form = document.getElementById('teamForm');
+        const formData = new FormData(form);
+
+        fetch("{% url 'team_add' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
             }
-        }
-
-        function addTeam(event) {
-            event.preventDefault();
-            const form = document.getElementById('teamForm');
-            const formData = new FormData(form);
-
-            fetch("{% url 'team_add' %}", {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const teamSelect = document.getElementById('id_team_id');
-                    const newOption = document.createElement('option');
-                    newOption.value = data.team_id;
-                    newOption.text = data.team_name;
-                    teamSelect.add(newOption);
-                    teamSelect.value = data.team_id; // Set the newly added team as selected
-                    toggleTeamModal();
-                    alert('Team added successfully!');
-                } else {
-                    alert('Error adding team');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const teamSelect = document.getElementById('id_team_id');
+                const newOption = document.createElement('option');
+                newOption.value = data.team_id;
+                newOption.text = data.team_name;
+                teamSelect.add(newOption);
+                teamSelect.value = data.team_id; // Set the newly added team as selected
+                toggleTeamModal();
+                alert('Team added successfully!');
+            } else {
                 alert('Error adding team');
-            });
-        }
-
-        function fetchPlayers(teamId) {
-            fetch(`/records/teams/${teamId}/students/`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const playersContainer = document.getElementById('playersContainer');
-                playersContainer.innerHTML = '';
-                data.team_student_mapping.forEach(mapping => {
-                    const playerDiv = document.createElement('div');
-                    playerDiv.innerHTML = `
-                        <label>${mapping.student__name}</label>
-                        <input type="number" name="player_scores[${mapping.student__student_id}]" value="0" placeholder="Score" class="p-2 border border-gray-300 rounded">
-                    `;
-                    playersContainer.appendChild(playerDiv);
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error fetching players');
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const teamSelect = document.getElementById('id_team_id');
-            teamSelect.addEventListener('change', (event) => {
-                fetchPlayers(event.target.value);
-            });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error adding team');
         });
-    </script>
+    }
+
+    function fetchPlayers(teamId) {
+        fetch(`/records/teams/${teamId}/students/`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const playersContainer = document.getElementById('playersContainer');
+            playersContainer.innerHTML = '';
+            data.team_student_mapping.forEach(mapping => {
+                const playerDiv = document.createElement('div');
+                playerDiv.innerHTML = `
+                    <label>${mapping.student__name}</label>
+                    <input type="number" name="player_scores[${mapping.student__student_id}]" value="0" placeholder="Score" class="p-2 border border-gray-300 rounded">
+                `;
+                playersContainer.appendChild(playerDiv);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error fetching players');
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const teamSelect = document.getElementById('id_team_id');
+        teamSelect.addEventListener('change', (event) => {
+            fetchPlayers(event.target.value);
+        });
+    });
+</script>
 {% endblock %}
 
 {% block content %}
-     <h1 class="text-3xl font-bold text-center my-6">게임 결과 추가</h1>
-    <form method="post" action="{% url 'game_result_add' competition.competition_id match.match_id %}" class="max-w-2xl mx-auto">
-        {% csrf_token %}
-        {{ gameResult_form.as_p }}
-        <div id="playersContainer" class="mt-4"></div>
-        <div class="flex justify-between mt-6">
-            <button type="submit" class="p-2 bg-emerald-500 text-white rounded hover:bg-emerald-700">Submit</button>
-            <button type="button" onclick="toggleTeamModal()" class="p-2 bg-emerald-500 text-white rounded hover:bg-emerald-700">팀 추가</button>
-        </div>
-    </form>
-
-    <div id="teamModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center" style="display:none;">
-        <div class="bg-white p-6 rounded shadow-lg">
-            <form id="teamForm" onsubmit="addTeam(event)">
-                {% csrf_token %}
-                {{ team_form.as_p }}
-                <div class="flex justify-end mt-4">
-                    <button type="submit" class="p-2 bg-emerald-500 text-white rounded hover:bg-emerald-700">Add Team</button>
-                    <button type="button" onclick="toggleTeamModal()" class="p-2 bg-gray-500 text-white rounded hover:bg-gray-700 ml-2">Close</button>
-                </div>
-            </form>
-        </div>
+<h1 class="text-3xl font-bold text-center my-6">게임 결과 추가</h1>
+<form method="post" action="{% url 'game_result_add' competition.competition_id match.match_id %}" class="max-w-2xl mx-auto">
+    {% csrf_token %}
+    {{ gameResult_form.as_p }}
+    <div id="playersContainer" class="mt-4" style="max-height: 300px; overflow-y: auto;"></div>  <!-- Set max height and enable vertical scrolling -->
+    <div class="flex justify-between mt-6">
+        <button type="submit" class="p-2 bg-emerald-500 text-white rounded hover:bg-emerald-700">Submit</button>
+        <button type="button" onclick="toggleTeamModal()" class="p-2 bg-emerald-500 text-white rounded hover:bg-emerald-700">팀 추가</button>
     </div>
+</form>
+
+<div id="teamModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center" style="display:none;">
+    <div class="bg-white p-6 rounded shadow-lg" style="max-height: 80vh; overflow-y: auto;"> <!-- Modal size and scrolling -->
+        <form id="teamForm" onsubmit="addTeam(event)">
+            {% csrf_token %}
+            {{ team_form.as_p }}
+            <div class="flex justify-end mt-4">
+                <button type="submit" class="p-2 bg-emerald-500 text-white rounded hover:bg-emerald-700">Add Team</button>
+                <button type="button" onclick="toggleTeamModal()" class="p-2 bg-gray-500 text-white rounded hover:bg-gray-700 ml-2">Close</button>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
