@@ -9,9 +9,18 @@
     <ul class="max-w-2xl mx-auto">
         {% for competition in competitions %}
             <li class="bg-white border border-gray-300 rounded p-4 mb-4 shadow">
-                <a href="{% url 'match_list' competition.competition_id %}" class="font-bold hover:underline text-blue-500">
-                    {{ competition.name }} ({{ competition.start_date }} - {{ competition.end_date }})
-                </a>
+                <div class="flex justify-between items-center">
+                    <a href="{% url 'match_list' competition.competition_id %}" class="font-bold hover:underline text-blue-500">
+                        {{ competition.name }} ({{ competition.start_date }} - {{ competition.end_date }})
+                    </a>
+                    {% if user.is_authenticated %}
+                        <!-- 대회 삭제 폼 -->
+                        <form method="post" action="{% url 'competition_delete' competition.competition_id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="p-2 bg-red-500 text-white rounded hover:bg-red-700">삭제</button>
+                        </form>
+                    {% endif %}
+                </div>
             </li>
         {% endfor %}
     </ul>

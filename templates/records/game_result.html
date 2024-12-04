@@ -11,6 +11,7 @@
                 <th class="border border-black px-4 py-2 bg-gray-200">선수</th>
                 <th class="border border-black px-4 py-2 bg-gray-200">점수</th>
                 <th class="border border-black px-4 py-2 bg-gray-200">승패</th>
+                <th class="border border-black px-4 py-2 bg-gray-200">삭제</th> <!-- 삭제 열 추가 -->
             </tr>
         </thead>
         <tbody>
@@ -27,6 +28,14 @@
                         </td>
                         <td class="border border-black px-4 py-2">{{ result.score }}</td>
                         <td class="border border-black px-4 py-2">{{ result.result }}</td>
+                        <td class="border border-black px-4 py-2">
+                            {% if user.is_authenticated %}
+                                <form method="post" action="{% url 'game_result_delete' competition.competition_id match.match_id result.game_result_id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="p-2 bg-red-500 text-white rounded hover:bg-red-700">삭제</button>
+                                </form>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             {% endfor %}

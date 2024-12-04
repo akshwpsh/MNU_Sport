@@ -30,6 +30,12 @@ class CompetitionCreateView(View):
             return redirect('competition_list')
         return render(request, 'records/competition_form.html', {'form': form})
 
+class CompetitionDeleteView(View):
+    def post(self, request, competition_id):
+        competition = get_object_or_404(Competition, pk=competition_id)
+        competition.delete()
+        return redirect('competition_list')
+
 class MatchListView(View):
     def get(self, request, competition_id):
         queue = request.GET.get('q')
@@ -59,6 +65,12 @@ class MatchCreateView(View):
             match.save()
             return redirect('match_list', competition_id=competition_id)
         return render(request, 'records/match_form.html', {'form': form, 'competition': competition})
+
+class MatchDeleteView(View):
+    def post(self, request, competition_id, match_id):
+        match = get_object_or_404(Match, pk=match_id)
+        match.delete()
+        return redirect('match_list', competition_id=competition_id)
 
 class SportListView(View):
     def get(self, request):
@@ -114,6 +126,12 @@ class GameResultView(View):
             gameResult.teams = teams
 
         return render(request, 'records/game_result.html', {'gameResults': gameResults, 'match': match, 'competition': competition})
+
+class GameResultDeleteView(View):
+    def post(self, request, competition_id, match_id, game_result_id):
+        gameResult = get_object_or_404(GameResult, pk=game_result_id)
+        gameResult.delete()
+        return redirect('game_result', competition_id=competition_id, match_id=match_id)
 
 class GameResultCreateView(View):
     def get(self, request, competition_id, match_id):

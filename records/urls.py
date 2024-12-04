@@ -5,10 +5,13 @@ urlpatterns = [
     path('', CompetitionListView.as_view(), name='home'),
     path('competition/', CompetitionListView.as_view(), name='competition_list'),
     path('competition/add/', CompetitionCreateView.as_view(), name='competition_add'),
+    path('competition/delete/<int:competition_id>/', CompetitionDeleteView.as_view(), name='competition_delete'),
     path('<int:competition_id>/matches/', MatchListView.as_view(), name='match_list'),
     path('<int:competition_id>/matches/add/', MatchCreateView.as_view(), name='match_add'),
+    path('<int:competition_id>/matches/delete/<int:match_id>/', MatchDeleteView.as_view(), name='match_delete'),
     path('<int:competition_id>/<int:match_id>/result', GameResultView.as_view(), name='game_result'),
     path('<int:competition_id>/<int:match_id>/result/add/', GameResultCreateView.as_view(), name='game_result_add'),
+    path('<int:competition_id>/<int:match_id>/result/delete/<int:game_result_id>/', GameResultDeleteView.as_view(), name='game_result_delete'),
 
     path('admin/', AdminPageView.as_view(), name='admin_page'),
     path('sport/', SportListView.as_view(), name='sport_list'),

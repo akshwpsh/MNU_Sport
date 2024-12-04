@@ -25,9 +25,18 @@
     <ul class="max-w-2xl mx-auto">
         {% for match in matches %}
             <li class="bg-white border border-gray-300 rounded p-4 mb-4 shadow">
-                 <a href="{% url 'game_result' competition.competition_id match.match_id %}" class="font-bold hover:underline text-blue-500">
-                    [{{match.sport.name}}] {{ match.match_name }} ({{ match.match_date }} - {{ match.location }})
-                </a>
+                <div class="flex justify-between items-center">
+                    <a href="{% url 'game_result' competition.competition_id match.match_id %}" class="font-bold hover:underline text-blue-500">
+                        [{{match.sport.name}}] {{ match.match_name }} ({{ match.match_date }} - {{ match.location }})
+                    </a>
+                    {% if user.is_authenticated %}
+                        <!-- 경기 삭제 폼 -->
+                        <form method="post" action="{% url 'match_delete' competition.competition_id match.match_id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="p-2 bg-red-500 text-white rounded hover:bg-red-700">삭제</button>
+                        </form>
+                    {% endif %}
+                </div>
             </li>
         {% endfor %}
     </ul>
